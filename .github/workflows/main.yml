@@ -18,6 +18,6 @@ jobs:
         with:
           java-version: 14
 
-     #finally build your app with the latest command
+     #finally build your app with the latest command .
       - name: Build and test with Maven
         run: mvn -B package --file pom.xml
