@@ -3,8 +3,6 @@ on:
   #to begin you want to launch this job in main and develop
   push:
     branches: [master]
-  pull_request:
-
 jobs:
   test-backend: 
     runs-on: ubuntu-22.04
@@ -21,7 +19,9 @@ jobs:
 
      #finally build your app with the latest command 
     - name: Build and test with Maven
-      run: mvn -B package --file simple-api/pom.xml
+      run: mvn -B verify sonar:sonar -Dsonar.projectKey=evesquematthieu_evesquematthieu -Dsonar.organization=evesquematthieu -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file ./simple-api/pom.xml
+
+      # run: mvn -B package --file simple-api/pom.xml
       
       
       
@@ -33,38 +33,41 @@ jobs:
 
     # steps to perform in job
     steps:
-     - name: Checkout code
-     - uses: actions/checkout@v2.5.0
+    - name: Checkout code
+      uses: actions/checkout@v2.5.0
+      
+    - name: Login to DockerHub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
-     - name: Build image and push backend
-     - uses: docker/build-push-action@v3
-     - with:
+    - name: Build image and push backend
+      uses: docker/build-push-action@v3
+      with:
         # relative path to the place where source code with Dockerfile is located
-        context: ./simple-api
+       context: ./simple-api
         # Note: tags has to be all lower-case
-        tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops/simple-api
+       tags:  ${{secrets.DOCKERHUB_USERNAME}}/devopstp_api:latest
         # build on feature branches, push only on main branch
-        push: ${{ github.ref == 'refs/heads/master' }}
+       push: ${{ github.ref == 'refs/heads/master' }}
 
-     - name: Build image and push database
-     - uses: docker/build-push-action@v3 
-     - with:
+    - name: Build image and push database
+      uses: docker/build-push-action@v3 
+      with:
         # relative path to the place where source code with Dockerfile is located
-        context: ./database
+       context: ./database
         # Note: tags has to be all lower-case
-        tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops/database
+       tags:  ${{secrets.DOCKERHUB_USERNAME}}/devopstp_database:latest
         # build on feature branches, push only on main branch
-        push: ${{ github.ref == 'refs/heads/master' }}
+       push: ${{ github.ref == 'refs/heads/master' }}
 
 
-     - name: Build image and push httpd
-     - uses: docker/build-push-action@v3 
-     - with:
+    - name: Build image and push httpd
+      uses: docker/build-push-action@v3 
+      with:
         # relative path to the place where source code with Dockerfile is located
-        context: ./httpd
+       context: ./httpd
         # Note: tags has to be all lower-case
-        tags:  ${{secrets.DOCKERHUB_USERNAME}}/tp-devops/httpd
+       tags:  ${{secrets.DOCKERHUB_USERNAME}}/devopstp_httpd:latest
         # build on feature branches, push only on main branch
-        push: ${{ github.ref == 'refs/heads/master' }}
+       push: ${{ github.ref == 'refs/heads/master' }}
         
 
