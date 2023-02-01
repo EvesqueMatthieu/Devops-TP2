@@ -1,0 +1,32 @@
+    ## Build #
+
+# On recupère maven et on le tag "maven"
+FROM maven:3.6.3-jdk-11 AS maven
+# On créer un working directory
+ENV WORKDIR /opt/api
+WORKDIR $WORKDIR
+# On copy pom.xml dans le repertoir courant du container
+COPY ./pom.xml .
+# On copy les source dans le repertoir ./src container
+COPY ./src/ ./src
+# On compile le tout sans faire de test
+RUN mvn package -DskipTests
+
+    ## Run ##
+
+# On recupère le runtime (JRE)
+FROM openjdk:11-jre
+y
+ENV WORKDIR /opt/api
+WORKDIR $MYAPP_HOME
+COPY --from=myapp-build $MYAPP_HOME/target/*.jar $MYAPP_HOME/myapp.jar
+
+ENTRYPOINT java -jar myapp.jar
+WORKDIR $WORKDIR
+# On copie ce qu'on à compilé précédement avec maven dans un jar.
+# Cette étape nous permet de ne garder un jar avec seulement ce qui nous iteresse de notre application
+# Pour ne pas garder toute les dépendances de maven fait lors du build et ainsi aléger notre image docker
+COPY --from=maven $WORKDIR/target/*.jar $WORKDIR/api.jar
+
+# On execute notre jar
+ENTRYPOINT java -jar api.jar

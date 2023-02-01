@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  database:
+    build: database/
+    networks: 
+      - TP1
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=usr
+      - POSTGRES_PASSWORD=pwd
+  api:
+    build: API/simple-api-student-main/
+    networks: 
+      - TP1
+    depends_on: 
+      - database
+    restart: always
+    
+  httpd:
+    build: web/reverseproxy
+    ports: 
+      - 80:80
+    networks: 
+      - TP1
+    depends_on:
+      - api
+networks:
+  TP1:
