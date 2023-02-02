@@ -1,0 +1,11 @@
+---
+# tasks file for roles/api
+- name: Run API
+  docker_container:
+    name: api
+    image: evesquematthieu/devopstp_api
+    networks:
+      - name: TP3
+    env:
+      SPRING_DATASOURCE_USERNAME: usr
+      SPRING_DATASOURCE_PASSWORD: pwd 

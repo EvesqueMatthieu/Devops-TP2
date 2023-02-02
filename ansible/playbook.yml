@@ -1,0 +1,9 @@
+ - hosts: all
+   become: yes
+   gather_facts: false
+   roles:
+     - docker #lunch task docker
+     - network #lunch task network
+     - database #lunch task database
+     - api #lunch task api
+     - httpd #lunch task httpd

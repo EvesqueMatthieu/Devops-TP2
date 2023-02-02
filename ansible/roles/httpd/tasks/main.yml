@@ -1,0 +1,10 @@
+---
+# tasks file for roles/httpd
+ - name: Run HTTPD
+   docker_container:
+     name: httpd
+     image: evesquematthieu/devopstp_httpd:latest
+     networks:
+       - name: TP3
+     ports:
+       - "80:80"
